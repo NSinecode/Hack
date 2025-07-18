@@ -2,6 +2,42 @@ from os.path import exists
 
 import cv2 as cv
 import numpy as np
+import os
+
+def transform_and_scale_point(point, origin, max_distance, scale=300):
+    """
+    Преобразует и масштабирует одну точку:
+    - point: (x, y) — исходная точка
+    - origin: (x0, y0) — начало новой системы координат
+    - max_distance: (max_dx, max_dy) — максимальное расстояние от origin по x и y
+    - scale: до какого значения масштабировать координаты (по умолчанию 300)
+    """
+    dx = point[0] - origin[0]
+    dy = point[1] - origin[1]
+
+    max_dx = max_distance[0] if max_distance[0] != 0 else 1
+    max_dy = max_distance[1] if max_distance[1] != 0 else 1
+
+    new_x = int(dx * scale / max_dx)
+    new_y = int(dy * scale / max_dy)
+
+    return [new_x, new_y]
+
+def average_point(points):
+    if not points:
+        return None
+
+    x_total = sum(p[0] for p in points)
+    y_total = sum(p[1] for p in points)
+    n = len(points)
+
+    avg_x = int(round(x_total / n))
+    avg_y = int(round(y_total / n))
+    return (avg_x, avg_y)
+
+def clear_console():
+    os.system("cls")
+
 def get_rectangle_center(points):
     """
     Принимает массив из 4 точек (формат: [[x1, y1], [x2, y2], [x3, y3], [x4, y4]])
@@ -10,30 +46,44 @@ def get_rectangle_center(points):
     center = points.mean(axis=0)
     return list(center)
 
-cap = cv.VideoCapture(1)
+cap = cv.VideoCapture(0)
 dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_1000)
+dictionaryW = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_5X5_1000)
 
 image = cv.imread("C:\\WIN_20250718_18_11_34_Pro.jpg")
 
 param = cv.aruco.DetectorParameters()
 
+# markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(image, dictionary, parameters=param)
+# for i in range(len(markerIds)):
+#     for j in range(4):
+#         cv.circle(image, list(int(i) for i in markerCorners[i][0][j]), 5, (0, 255, 0), 5)
+#         cv.imshow("imggg", image)
+#         cv.waitKey()
 
 
 ptsAcc = []
+ptsIndAcc = []
 
 while True:
     ret, frame = cap.read()
     if not ret:
         print("Не удалось получить кадр")
         break
-    gray_bgr = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    gray_bgr = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     gray = cv.cvtColor(gray_bgr, cv.COLOR_GRAY2BGR)
 
     markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(gray, dictionary, parameters=param)
+    mcW, miW, rcW = cv.aruco.detectMarkers(gray, dictionaryW, parameters=param)
+
+    if miW is not None:
+        for i in range(len(miW)):
+            cv.circle(gray, list(int(i) for i in get_rectangle_center(mcW[i][0])), 1, (0, 0, 255), 1)
+
     if markerIds is not None:
         for i in range(len(markerIds)):
             if markerIds[i][0] in [40, 50, 60, 70, 80]:
-                cv.circle(gray, list(int(i) for i in get_rectangle_center(markerCorners[i][0])), 2, (0, 255, 0), 2)
+                cv.circle(gray, list(int(i) for i in get_rectangle_center(markerCorners[i][0])), 1, (0, 255, 0), 1)
 
     ptsInd = []
     if markerIds is not None:
@@ -41,16 +91,17 @@ while True:
             if markerIds[i][0] in [0, 1, 2, 3]:
                 ptsInd.append(i)
     if len(ptsInd) == 4:
-        ptsAcc = ptsInd.copy()
-        pts = np.float32([list(int(i) for i in markerCorners[ptsInd[0]][0][1]),
-        list(int(i) for i in markerCorners[ptsInd[1]][0][0]),
-        list(int(i) for i in markerCorners[ptsInd[2]][0][2]),
-        list(int(i) for i in markerCorners[ptsInd[3]][0][3])])
-    # pts = np.float32([[369, 921], [1237, 1006], [513, 118], [1277, 216]])
+        pts = np.float32([list(int(i) for i in markerCorners[ptsInd[0]][0][3]),
+        list(int(i) for i in markerCorners[ptsInd[1]][0][2]),
+        list(int(i) for i in markerCorners[ptsInd[2]][0][0]),
+        list(int(i) for i in markerCorners[ptsInd[3]][0][1])])
+        ptsAcc = pts.copy()
+        ptsIndAcc = ptsInd.copy()
 
         ptsA = np.float32([[0, 0], [500, 0], [0, 500], [500, 500]])
         M = cv.getPerspectiveTransform(pts, ptsA)
         dst = cv.warpPerspective(gray, M, (500, 500))
+
 
         cv.imshow('Веб-камера', dst)
     elif len(ptsAcc) == 4:
@@ -62,14 +113,44 @@ while True:
     else:
         cv.imshow('Веб-камера', gray)
 
+    red_mask = cv.inRange(gray, (0, 0, 250), (10, 10, 255))
+
+    # Создаем маску для зелёного цвета (в BGR: (0, 255, 0))
+    green_mask = cv.inRange(gray, (0, 250, 0), (10, 255, 10))
+
+    # Находим координаты ненулевых точек (то есть цветных точек)
+    red_coords = cv.findNonZero(red_mask)  # np array: [[x, y]], [[x2, y2]], ...
+    green_coords = cv.findNonZero(green_mask)
+
+    # Преобразуем в список координат
+    if red_coords is not None:
+        red_points = [tuple(pt[0]) for pt in red_coords]
+    else:
+        red_points = []
+
+    if green_coords is not None:
+        green_points = [tuple(pt[0]) for pt in green_coords]
+    else:
+        green_points = []
+    avg_red = []
+    avg_green = []
+    print("\n" * 100)
+    j = 0
+    red_points.sort()
+    green_points.sort()
+    for i in range(0, len(green_points) - 3, 4):
+        avg_green.append(average_point([green_points[i], green_points[i+1], green_points[i+2], green_points[i+3]]))
+    for i in range(0, len(red_points) - 3, 4):
+        avg_red.append(average_point([red_points[i], red_points[i+1], red_points[i+2], red_points[i+3]]))
+    print(list(transform_points(list(j for j in i), markerCorners[ptsIndAcc[2]][0][0]) for i in avg_red))
+    print(list(transform_points(list(j for j in i), markerCorners[ptsIndAcc[2]][0][0]) for i in avg_green))
 
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()
 
-# cv.imshow("img", im)
-cv.waitKey()
+#cv.waitKey()
 cv.destroyAllWindows()
 
 
