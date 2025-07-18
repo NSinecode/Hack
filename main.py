@@ -2,6 +2,7 @@ import math
 from typing import Tuple, Optional
 
 class Square:
+
     def __init__(self, x: int = 0, y: int = 0, size: int = 50, rotation: int = 0):
         """
         Initialize a square with position, size, and rotation.
@@ -158,3 +159,6 @@ class Square:
     def get_center(self) -> Tuple[int, int]:
         """Get the center position of the square."""
         return (self.x, self.y)
+
+def get_rects():
+    pass

@@ -1,4 +1,5 @@
 import socket
+import main
 
 class RobotClient:
     def __init__(self, host, port):
@@ -42,12 +43,15 @@ def rotate(angle):
     client.send_command(f'TOOL_ROTATE_TO {angle}')
 
 x,y,z = get_pos()
+field = main.get_rects()
 
-
+starting_place = main.Square(175, 175, 80, 0)
 
 try:
     #########################Ваш код: НАЧАЛО#######################
 
+    #Расчистка старта
+    
 
     client.send_command(f'TOOL_VACUUM_OFF')
     client.send_command(f'MOVE_TO 175 175 100')
