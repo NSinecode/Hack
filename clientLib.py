@@ -1,5 +1,6 @@
 import socket
 from main import *
+from serverV2Field import start_server
 
 class RobotClient:
     def __init__(self, host, port):
@@ -22,6 +23,7 @@ class RobotClient:
         self.s.close()
 
 
+start_server()
 
 client = RobotClient('192.168.0.191', 5000)
 client.send_command('TOOL_ROTATE_TO 0')
@@ -37,7 +39,6 @@ def activate():
 
 def deactivate():
     client.send_command(f'TOOL_VACUUM_OFF')
-
 
 def rotate(angle):
     client.send_command(f'TOOL_ROTATE_TO {angle}')
