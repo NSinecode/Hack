@@ -74,7 +74,7 @@ def transform_command(command):
             # MOVE_TO: меняем X и Y местами + смещения
             x_new = -y + 552
             y_new = -x + 268
-            z_new = z-3
+            z_new = z - 3
         # Собираем итоговую строку
         return f"{parts[0]} {int(x_new)} {int(y_new)} {int(z_new)}"
     if parts[0] == "TOOL_ROTATE_TO":
