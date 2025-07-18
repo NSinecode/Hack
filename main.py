@@ -142,8 +142,8 @@ while True:
         avg_green.append(average_point([green_points[i], green_points[i+1], green_points[i+2], green_points[i+3]]))
     for i in range(0, len(red_points) - 3, 4):
         avg_red.append(average_point([red_points[i], red_points[i+1], red_points[i+2], red_points[i+3]]))
-    print(list(transform_points(list(j for j in i), markerCorners[ptsIndAcc[2]][0][0]) for i in avg_red))
-    print(list(transform_points(list(j for j in i), markerCorners[ptsIndAcc[2]][0][0]) for i in avg_green))
+    print(list(transform_and_scale_point(list(j for j in i), markerCorners[ptsIndAcc[2]][0][0]) for i in avg_red))
+    print(list(transform_and_scale_point(list(j for j in i), markerCorners[ptsIndAcc[2]][0][0]) for i in avg_green))
 
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
