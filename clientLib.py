@@ -23,6 +23,28 @@ class RobotClient:
 
 
 client = RobotClient('192.168.0.191', 5000)
+client.send_command('TOOL_ROTATE_TO 0')
+
+def get_pos():
+    return list(map(int, client.send_command('GET_POSITION').split()))
+
+def move(x,y,z):
+    client.send_command(f'MOVE_TO {x} {y} {z}')
+
+def activate():
+    client.send_command(f'TOOL_VACUUM_ON')
+
+def deactivate():
+    client.send_command(f'TOOL_VACUUM_OFF')
+
+
+def rotate(angle):
+    client.send_command(f'TOOL_ROTATE_TO {angle}')
+
+x,y,z = get_pos()
+
+
+
 try:
     #########################Ваш код: НАЧАЛО#######################
 
