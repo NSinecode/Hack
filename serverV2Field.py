@@ -23,10 +23,10 @@ def find_arduino_port():
             ser = serial.Serial(port.device, 115200, timeout=1)
             print(port.device)
             time.sleep(2)  # Ждём, пока Arduino перезагрузится
-            ser.flushInput()
+            ser.reset_input_buffer()
             ser.write(b'PING\n')  # Отправляем команду PING
             print(1)
-            response = ser.readline().decode().strip()
+            response = ser.readline().decode('utf-8', errors='ignore').strip()
             print(response)
             if response == 'PONG':
                 print(f"Arduino обнаружена на {port.device}")
@@ -39,7 +39,8 @@ def find_arduino_port():
 
 ser = find_arduino_port()
 if ser is None:
-    exit()
+    print("Arduino not found, running in simulation mode")
+    ser = None
 
 # Для гарантированной последовательности обращений к ser введём блокировку
 serial_lock = threading.Lock()
@@ -99,10 +100,15 @@ def send_to_arduino_and_get_response(command):
     if command.startswith("MOVE_TO"):
         command = transform_command(command)
     
+    if ser is None:
+        # Simulation mode - just echo back the command
+        print(f"[SERVER] Simulation mode - echoing: {command}")
+        return "OK"
+    
     with serial_lock:
         ser.write((command + '\n').encode())
         while True:
-            response = ser.readline().decode().strip()
+            response = ser.readline().decode('utf-8', errors='ignore').strip()
             if response:
                 print(f"[SERVER] Ответ от Arduino: {response}")
                 return response

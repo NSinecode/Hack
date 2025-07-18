@@ -1,47 +1,47 @@
-import cv2 as cv
-import numpy as np
-def get_rectangle_center(points):
-    """
-    Принимает массив из 4 точек (формат: [[x1, y1], [x2, y2], [x3, y3], [x4, y4]])
-    Возвращает центр прямоугольника как (x, y)
-    """
-    points = np.array(points)
-    center = points.mean(axis=0)
-    return list(center)
+# import cv2 as cv
+# import numpy as np
+# def get_rectangle_center(points):
+#     """
+#     Принимает массив из 4 точек (формат: [[x1, y1], [x2, y2], [x3, y3], [x4, y4]])
+#     Возвращает центр прямоугольника как (x, y)
+#     """
+#     points = np.array(points)
+#     center = points.mean(axis=0)
+#     return list(center)
 
-# cap = cv.VideoCapture(1)
-dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_1000)
+# # cap = cv.VideoCapture(1)
+# dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_1000)
 
-image = cv.imread("C:\\WIN_20250718_18_11_34_Pro.jpg")
+# image = cv.imread("C:\\WIN_20250718_18_11_34_Pro.jpg")
 
-param = cv.aruco.DetectorParameters()
+# param = cv.aruco.DetectorParameters()
 
-markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(image, dictionary, parameters=param)
-sqrInd = []
-for i in range(len(markerIds)):
-    if markerIds[i][0] in [40, 50, 60, 70, 80]:
-        sqrInd.append(i)
+# markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(image, dictionary, parameters=param)
+# sqrInd = []
+# for i in range(len(markerIds)):
+#     if markerIds[i][0] in [40, 50, 60, 70, 80]:
+#         sqrInd.append(i)
 
-# pts = np.float32([list(int(i) for i in markerCorners[ptsInd[0]][0][1]),
-# list(int(i) for i in markerCorners[ptsInd[1]][0][0]),
-# list(int(i) for i in markerCorners[ptsInd[2]][0][2]),
-# # list(int(i) for i in markerCorners[ptsInd[3]][0][3])])
-pts = np.float32([[369, 921], [1237, 1006], [513, 118], [1277, 216]])
+# # pts = np.float32([list(int(i) for i in markerCorners[ptsInd[0]][0][1]),
+# # list(int(i) for i in markerCorners[ptsInd[1]][0][0]),
+# # list(int(i) for i in markerCorners[ptsInd[2]][0][2]),
+# # # list(int(i) for i in markerCorners[ptsInd[3]][0][3])])
+# pts = np.float32([[369, 921], [1237, 1006], [513, 118], [1277, 216]])
 
 
-ptsA = np.float32([[0, 0], [500, 0], [0, 500], [500, 500]])
-M = cv.getPerspectiveTransform(pts, ptsA)
-dst = cv.warpPerspective(image, M, (500, 500))
+# ptsA = np.float32([[0, 0], [500, 0], [0, 500], [500, 500]])
+# M = cv.getPerspectiveTransform(pts, ptsA)
+# dst = cv.warpPerspective(image, M, (500, 500))
 
-MM = cv.getRotationMatrix2D(((500-1)/2.0,(500-1)/2.0),180,1)
-im = cv.warpAffine(dst,MM,(500, 500))
+# MM = cv.getRotationMatrix2D(((500-1)/2.0,(500-1)/2.0),180,1)
+# im = cv.warpAffine(dst,MM,(500, 500))
 
-markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(im, dictionary, parameters=param)
+# markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(im, dictionary, parameters=param)
 
-sqrInd = []
-for i in range(len(markerIds)):
-    ##if markerIds[i][0] in [40, 50, 60, 70, 80]:
-    cv.circle(im, get_rectangle_center(list(int(i) for i in markerCorners[i][0])))
+# sqrInd = []
+# for i in range(len(markerIds)):
+#     ##if markerIds[i][0] in [40, 50, 60, 70, 80]:
+#     cv.circle(im, get_rectangle_center(list(int(i) for i in markerCorners[i][0])))
 # while True:
 #     ret, frame = cap.read()  # Читаем кадр
 #     if not ret:
@@ -65,9 +65,9 @@ for i in range(len(markerIds)):
 # # Освобождаем ресурсы
 # cap.release()
 
-cv.imshow("img", im)
-cv.waitKey()
-cv.destroyAllWindows()
+# cv.imshow("img", im)
+# cv.waitKey()
+# cv.destroyAllWindows()
 
 
 import math
@@ -234,3 +234,5 @@ class Square:
 
 def get_rects():
     return []
+
+print('onewhsd;fl')

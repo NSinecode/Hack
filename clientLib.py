@@ -1,6 +1,5 @@
 import socket
-from main import *
-from serverV2Field import start_server
+from main import Square, get_rects
 
 class RobotClient:
     def __init__(self, host, port):
@@ -23,10 +22,15 @@ class RobotClient:
         self.s.close()
 
 
-start_server()
+print('stage 1')
 
 client = RobotClient('192.168.0.191', 5000)
+
+print('stage 2')
+
 client.send_command('TOOL_ROTATE_TO 0')
+
+print('stage 3')
 
 def get_pos():
     return list(map(int, client.send_command('GET_POSITION').split()))
