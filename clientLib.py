@@ -25,9 +25,12 @@ class RobotClient:
 
 def get_mal_angle(p1, p2):
     x1,y1,x2,y2 = *p1, *p2
-    angle = round(math.atan2(y2 - y1, x2 - x1) * 180 / math.pi)
-    return 90 - angle % 90 if angle % 90 != 0 else 0 
+    return math.atan2(y2 - y1, x2 - x1)
+    
 
+def deform_angle(angle):
+    angle = round(angle * 180 / math.pi)
+    return 90 - angle % 90 if angle % 90 != 0 else 0 
 
 
 print('stage 1')
@@ -45,6 +48,11 @@ def get_pos():
     client.send_command('GET_POSITION')
 
 def move(x,y,z):
+    x = max(x,0)
+    y = max(y,0)
+
+    x = min(x, 300)
+    y = min(y, 300)
     client.send_command(f'MOVE_TO {x} {y} {z}')
 
 def activate():
@@ -54,6 +62,7 @@ def deactivate():
     client.send_command(f'TOOL_VACUUM_OFF')
 
 def rotate(angle):
+    angle = angle%90
     client.send_command(f'TOOL_ROTATE_TO {angle}')
 
 def move_sq(sq, x, y, height0=5, height1=5, max_h=28, rotation=False):
@@ -61,7 +70,7 @@ def move_sq(sq, x, y, height0=5, height1=5, max_h=28, rotation=False):
     activate()
     move(sq.x, sq.y, max_h)
     if rotation:
-        rotate(sq.rotation)
+        rotate(deform_angle(sq.rotation))
     move(x, y, max_h)
     move(x, y, height1)
     deactivate()
@@ -109,7 +118,7 @@ try:
     for stage in range(5):
         stage_sq = find_id(field, 80 - stage * 10)
 
-        move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5)
+        move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5, rotation=True)
 
 
     # client.send_command(f'TOOL_VACUUM_OFF')
