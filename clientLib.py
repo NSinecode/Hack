@@ -1,5 +1,5 @@
 import socket
-import main
+from main import *
 
 class RobotClient:
     def __init__(self, host, port):
@@ -42,16 +42,54 @@ def deactivate():
 def rotate(angle):
     client.send_command(f'TOOL_ROTATE_TO {angle}')
 
-x,y,z = get_pos()
-field = main.get_rects()
+def move_sq(sq, x, y, height0=4, height1=4, max_h=28):
+    move(sq.x, sq.y, height0)
+    activate()
+    move(sq.x, sq.y, max_h)
+    move(x, y, max_h)
+    move(x, y, height1)
+    deactivate()
 
-starting_place = main.Square(175, 175, 80, 0)
+def move_sq_vec(sq, vec, height0=4, height1=4, max_h=28):
+    x,y = vec
+    move_sq(sq, sq.x + x, sq.y + y, height0, height1, max_h)
+
+def normalize(vec):
+    l = length(vec)
+    return [vec[0] / l, vec[1] / l]
+
+def set_len_vec(vec, length):
+    x,y = normalize(vec)
+    return [x * length, y * length]
+
+def length(vec):
+    return ( vec[0] ** 2 + vec[1] ** 2 ) ** 0.5
+
+def find_id(sqs, id = 80):
+    return [i for i in sqs if i.size == id][0]
+
+x,y,z = get_pos()
+field = get_rects()
+
+
+starting_place = Square(175, 175, 80, 0)
 
 try:
     #########################Ваш код: НАЧАЛО#######################
 
     #Расчистка старта
-    
+    for i in field:
+        id = i.size
+        if id != 80 and i.collides_with(starting_place):
+            vec = [i.x - 175, i.y - 175]
+            move_sq_vec(i, set_len_vec(vec, i.size),max_h=5)
+            #Обновление поля обязательно
+            field = get_rects()
+
+    for stage in range(5):
+        stage_sq = find_id(field, 80 - stage * 10)
+        move_sq(stage_sq, 175, 175, height0=4, height1=4 + stage * 4, max_h=12 + stage * 4)
+
 
     client.send_command(f'TOOL_VACUUM_OFF')
     client.send_command(f'MOVE_TO 175 175 100')

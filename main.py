@@ -161,4 +161,4 @@ class Square:
         return (self.x, self.y)
 
 def get_rects():
-    pass
+    return []
