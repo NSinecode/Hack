@@ -91,7 +91,8 @@ def length(vec):
     return ( vec[0] ** 2 + vec[1] ** 2 ) ** 0.5
 
 def find_id(sqs, id = 80):
-    return [i for i in sqs if i.size == id][0]
+    a = [i for i in sqs if i.size == id]
+    return a[0] if a else None
 
 
 
@@ -113,7 +114,7 @@ try:
     #         vec = [i.x - 175, i.y - 175]
     #         move_sq_vec(i, set_len_vec(vec, i.size),max_h=7)
     #         #Обновление поля обязательно
-    #         field = get_rects()
+    #         #field = get_rects()
 
     # for stage in range(5):
     #     stage_sq = find_id(field, 80 - stage * 10)
@@ -130,18 +131,18 @@ try:
 
     
     # move(175, 175, 100)
-    # OK X 377.00 Y 93.00 Z 97.00
-    move(175, 175, 100)
-    while True:
+    #OK X 377.00 Y 93.00 Z 97.00
+    # move(175, 175, 100)
+    # while True:
         
-        i = input()
-        if i == 'a':
-            activate()
-        elif i == 'd':
-            deactivate()
-        else: 
-            x,y,z = map(int, i.split())
-            move(x,y,z)
+    #     i = input()
+    #     if i == 'a':
+    #         activate()
+    #     elif i == 'd':
+    #         deactivate()
+    #     else: 
+    #         x,y,z = map(int, i.split())
+    #         move(x,y,z)
         
     
 
