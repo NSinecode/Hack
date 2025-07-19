@@ -96,11 +96,9 @@ def find_id(sqs, id = 80):
 
 # x,y,z = get_pos()
 
-move(400,410, 100)
 
-field = get_rects()
 
-print(*[[j.x,j.y,j.size,j.rotation] for j in field], sep='\n')
+
 
 starting_place = Square(175, 175, 80, 0)
 
@@ -108,6 +106,11 @@ try:
     #########################Ваш код: НАЧАЛО#######################
 
     client.send_command(f'CALIBRATE')
+
+    move(400,410, 100)
+
+    field = get_rects()
+    print(*[[j.x,j.y,j.size,j.rotation] for j in field], sep='\n')
 
     #Расчистка старта
     for idx in range(len(field)):
@@ -122,11 +125,11 @@ try:
             vec = [i.x - 175, i.y - 175]
             print(vec)
             if not vec[0] < 0 and not vec[1] < 0:
-                move_sq_vec(i, set_len_vec(vec, i.size),max_h=15)
+                move_sq_vec(i, set_len_vec(vec, i.size),max_h=50)
                 print(f'Target block moved ID:{id}')
         #Обновление поля обязательно
 
-        print(*[[j.x,j.y,j.size,j.rotation] for j in field], sep='\n')
+        print(*[[idx, j.x,j.y,j.size,j.rotation] for j in field], sep='\n')
 
     move(400, 410, 100)
     field = get_rects()
@@ -138,7 +141,7 @@ try:
     for stage in range(5):
         stage_sq = find_id(field, 80 - stage * 10)
         if stage_sq is not None:
-            move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5, rotation=True)
+            move_sq(stage_sq, 175, 175, height0=5, height1=30, max_h=50, rotation=True)
             print('Moved stage')
 
 
