@@ -50,9 +50,6 @@ def get_pos():
 def move(x,y,z):
     x = max(x,56)
     y = max(y,56)
-
-    x = min(x, 300)
-    y = min(y, 300)
     client.send_command(f'MOVE_TO {x} {y} {z}')
 
 def activate():
@@ -65,14 +62,15 @@ def rotate(angle):
     angle = angle%90
     client.send_command(f'TOOL_ROTATE_TO {angle}')
 
-def move_sq(sq, x, y, height0=5, height1=5, max_h=28, rotation=False):
+def move_sq(sq: Square, x, y, height0=5, height1=5, max_h=28, rotation=False, trash=False):
+    move(sq.x, sq.y, max_h)
     move(sq.x, sq.y, height0)
     activate()
     move(sq.x, sq.y, max_h)
     if rotation:
         rotate(deform_angle(sq.rotation))
     move(x, y, max_h)
-    move(x, y, height1)
+    if not trash: move(x, y, height1)
     deactivate()
 
 def move_sq_vec(sq, vec, height0=5, height1=5, max_h=28):
@@ -97,8 +95,12 @@ def find_id(sqs, id = 80):
 
 
 # x,y,z = get_pos()
+
+move(400,410, 100)
+
 field = get_rects()
 
+print(*[[j.x,j.y,j.size,j.rotation] for j in field], sep='\n')
 
 starting_place = Square(175, 175, 80, 0)
 
@@ -108,20 +110,36 @@ try:
     client.send_command(f'CALIBRATE')
 
     #Расчистка старта
-    for i in field:
+    for idx in range(len(field)):
+        i = field[idx]
         id = i.size
+        print(id)
         if id == 0:
-            move_sq(i, 300, 300, height0=5, height1=20, max_h=28)
+            move_sq(i, 400, 410, height0=5, height1=20, max_h=100, trash=True)
+            print(f'trash wasted {i.x}')
         elif id != 80 and i.collides_with(starting_place):
+            print('Traget prep')
             vec = [i.x - 175, i.y - 175]
-            move_sq_vec(i, set_len_vec(vec, i.size),max_h=15)
-            #Обновление поля обязательно
-            field = get_rects()
+            print(vec)
+            if not vec[0] < 0 and not vec[1] < 0:
+                move_sq_vec(i, set_len_vec(vec, i.size),max_h=15)
+                print(f'Target block moved ID:{id}')
+        #Обновление поля обязательно
+
+        print(*[[j.x,j.y,j.size,j.rotation] for j in field], sep='\n')
+
+    move(400, 410, 100)
+    field = get_rects()
+    print(*[[j.x, j.y, j.size, j.rotation] for j in field], sep='\n')
+
+
+    print('SATGE MOVINGGGG!!!!')
 
     for stage in range(5):
         stage_sq = find_id(field, 80 - stage * 10)
-
-        move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5, rotation=True)
+        if stage_sq is not None:
+            move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5, rotation=True)
+            print('Moved stage')
 
 
     # client.send_command(f'TOOL_VACUUM_OFF')
