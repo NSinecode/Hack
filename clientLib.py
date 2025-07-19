@@ -48,8 +48,8 @@ def get_pos():
     client.send_command('GET_POSITION')
 
 def move(x,y,z):
-    x = max(x,0)
-    y = max(y,0)
+    x = max(x,56)
+    y = max(y,56)
 
     x = min(x, 300)
     y = min(y, 300)
@@ -107,18 +107,18 @@ try:
     client.send_command(f'CALIBRATE')
 
     #Расчистка старта
-    for i in field:
-        id = i.size
-        if id != 80 and i.collides_with(starting_place):
-            vec = [i.x - 175, i.y - 175]
-            move_sq_vec(i, set_len_vec(vec, i.size),max_h=7)
-            #Обновление поля обязательно
-            field = get_rects()
+    # for i in field:
+    #     id = i.size
+    #     if id != 80 and i.collides_with(starting_place):
+    #         vec = [i.x - 175, i.y - 175]
+    #         move_sq_vec(i, set_len_vec(vec, i.size),max_h=7)
+    #         #Обновление поля обязательно
+    #         field = get_rects()
 
-    for stage in range(5):
-        stage_sq = find_id(field, 80 - stage * 10)
+    # for stage in range(5):
+    #     stage_sq = find_id(field, 80 - stage * 10)
 
-        move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5, rotation=True)
+    #     move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5, rotation=True)
 
 
     # client.send_command(f'TOOL_VACUUM_OFF')
@@ -130,18 +130,18 @@ try:
 
     
     # move(175, 175, 100)
-    #OK X 377.00 Y 93.00 Z 97.00
-    # move(175, 175, 100)
-    # while True:
+    # OK X 377.00 Y 93.00 Z 97.00
+    move(175, 175, 100)
+    while True:
         
-    #     i = input()
-    #     if i == 'a':
-    #         activate()
-    #     elif i == 'd':
-    #         deactivate()
-    #     else: 
-    #         x,y,z = map(int, i.split())
-    #         move(x,y,z)
+        i = input()
+        if i == 'a':
+            activate()
+        elif i == 'd':
+            deactivate()
+        else: 
+            x,y,z = map(int, i.split())
+            move(x,y,z)
         
     
 
