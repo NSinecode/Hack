@@ -53,7 +53,7 @@ def get_rectangle_center(points):
     return list(center)
 
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(1)
 dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_1000)
 dictionaryW = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_5X5_1000)
 
@@ -350,7 +350,7 @@ def get_rects():
     ret, frame = cap.read()
     if not ret:
         print("Не удалось получить кадр")
-    gray_bgr = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    gray_bgr = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     gray = cv.cvtColor(gray_bgr, cv.COLOR_GRAY2BGR)
     markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(gray, dictionary, parameters=param)
     mcW, miW, rcW = cv.aruco.detectMarkers(gray, dictionaryW, parameters=param)
