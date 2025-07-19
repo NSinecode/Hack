@@ -108,18 +108,20 @@ try:
     client.send_command(f'CALIBRATE')
 
     #Расчистка старта
-    # for i in field:
-    #     id = i.size
-    #     if id != 80 and i.collides_with(starting_place):
-    #         vec = [i.x - 175, i.y - 175]
-    #         move_sq_vec(i, set_len_vec(vec, i.size),max_h=7)
-    #         #Обновление поля обязательно
-    #         #field = get_rects()
+    for i in field:
+        id = i.size
+        if id == 0:
+            move_sq(i, 300, 300, height0=5, height1=20, max_h=28)
+        elif id != 80 and i.collides_with(starting_place):
+            vec = [i.x - 175, i.y - 175]
+            move_sq_vec(i, set_len_vec(vec, i.size),max_h=15)
+            #Обновление поля обязательно
+            field = get_rects()
 
-    # for stage in range(5):
-    #     stage_sq = find_id(field, 80 - stage * 10)
+    for stage in range(5):
+        stage_sq = find_id(field, 80 - stage * 10)
 
-    #     move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5, rotation=True)
+        move_sq(stage_sq, 175, 175, height0=5, height1=5 + stage * 5, max_h=13 + stage * 5, rotation=True)
 
 
     # client.send_command(f'TOOL_VACUUM_OFF')
