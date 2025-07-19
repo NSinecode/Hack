@@ -171,7 +171,7 @@ while True:
     #     avg_green.append(average_point([green_points[i+j] for j in range(37)]))
     # for i in range(0, len(red_points) - 36, 37):
     #     avg_red.append(average_point([red_points[i+j] for j in range(37)]))
-    wrngSqr = list([325 - (j // 2) for j in i] for i in avg_red)
+    wrngSqr = list([325 - j for j in i] for i in avg_red)
     print(wrngSqr)
     finArr = []
     for i in wrngSqr:
@@ -427,7 +427,7 @@ def get_rects():
     else:
         red_points = []
     avg_red = db_scan(red_points)
-    wrngSqr = list([325 - (j // 2) for j in i] for i in avg_red)
+    wrngSqr = list([325 - j for j in i] for i in avg_red)
     finArr = []
     for i in wrngSqr:
         x, y = i
