@@ -7,7 +7,16 @@ def get_mal_angle(p1, p2):
     angle = round(math.atan2(y2 - y1, x2 - x1) * 180 / math.pi)
     return 90 - angle % 90 if angle % 90 != 0 else 0
 
-def calculate_distance_mm(p1, p2, focal_length_mm=None, known_object_width_mm=50, known_object_width_pixels=115):
+def calc_x_y(p1,p2=(0,0),distance_mm=0.0):
+    x1,y1,x2,y2 = *p1, *p2
+    x = abs(x1 + distance_mm * math.cos(math.atan2(y2 - y1, x2 - x1)))
+    y = abs(y1 + distance_mm * math.sin(math.atan2(y2 - y1, x2 - x1)))
+    return (x,y)
+
+def final_calc(p1):
+    return calc_x_y(p1,distance_mm=calculate_distance_mm(p1))
+
+def calculate_distance_mm(p1, p2=(0,0), focal_length_mm=None, known_object_width_mm=50, known_object_width_pixels=115):
     """
     Calculate distance between two points in millimeters.
     
